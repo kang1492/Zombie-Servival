@@ -20,15 +20,22 @@ public class Bullet : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("충돌");
-        Instantiate(Resources.Load<GameObject>("WFX_Explosion Simple"),
-            transform.position,
-            transform.rotation
-            );
+        // 데미지 주기
+        if(other.CompareTag("Eneny")) //8 -11
+        {
+            //Debug.Log("충돌");
+            Instantiate
+                (
+                Resources.Load<GameObject>("WFX_Explosion Simple"),
+                transform.position,
+                transform.rotation
+                 );
 
 
-        //effect.Play();
-        Destroy(this.gameObject);//0.1초 보였다 사라질것임
+              //effect.Play();
+              Destroy(this.gameObject);//0.1초 보였다 사라질것임
+        }
+        
     }
 
 }
