@@ -30,10 +30,15 @@ public class Bullet : MonoBehaviour
                 transform.position,
                 transform.rotation
                  );
+                                        // 부모껄 찾기
+            
+            //8-12
+            other.transform.GetComponentInParent<AIControl>().health -= 20;
+            other.transform.GetComponentInParent<AIControl>().Death();
 
 
               //effect.Play();
-              Destroy(this.gameObject);//0.1초 보였다 사라질것임
+            Destroy(this.gameObject);//0.1초 보였다 사라질것임
         }
         
     }
