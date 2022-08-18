@@ -21,7 +21,7 @@ public class Bullet : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         // 데미지 주기
-        if(other.CompareTag("Eneny")) //8 -11
+        if(other.CompareTag("Enemy")) //8 -11
         {
             //Debug.Log("충돌");
             Instantiate
