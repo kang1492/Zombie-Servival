@@ -13,10 +13,12 @@ public class Control : MonoBehaviour
 
     private CharacterController characterControl;
     private Vector3 moveForce;
+    [SerializeField] float distance = 100.0f; //8-18 광선이 100 미터 까지 발사 된다.
     [SerializeField] float speed;
     [SerializeField] float gravity = 20.0f;
     [SerializeField] ParticleSystem effect;
-    [SerializeField] GameObject bullet; // 총알 만들기
+    //[SerializeField] GameObject bullet; // 총알 만들기 8-18 총알 삭제
+    [SerializeField] LayerMask layer; // 8-18
     
 
     void Start()
@@ -36,8 +38,9 @@ public class Control : MonoBehaviour
         if(Input.GetButtonDown("Fire1"))
         {
             effect.Play();
-            SoundSystem.instance.Sound(0); // 8-12
-            Instantiate(bullet, effect.transform.position, effect.transform.rotation);
+            SoundSystem.instance.Sound(0); // 8-12 총소리
+            TwoStepRay(); //8-18, 호출하기
+            //Instantiate(bullet, effect.transform.position, effect.transform.rotation); 8-18 지워도 괜찬음
             // 총구 방향
         }
 
@@ -94,4 +97,68 @@ public class Control : MonoBehaviour
     {// float 반환값 필요
         return Mathf.Clamp(angle, min, max);
     }
+
+    public void TwoStepRay() //8-18
+    {   
+        // 광선이 있어야 됨. 선언함
+        Ray ray;
+
+        // 붙힏힌 녀석의 정보가 필요함
+        RaycastHit hit;
+        Vector3 target = Vector3.zero;
+
+        // 화면의 중앙 좌표 (Cross Hair를 기준으로 Raycast를 연산합니다.)
+
+        // ray 필요함                        원점을 쏘기 때문에
+        ray = Camera.main.ViewportPointToRay(Vector2.one * 0.5f);
+
+        // 총알이 허공에 발사 되었을때 예외 처리 필요
+        // 공격 사거리 안에 부딛히는 오브젝트가 있으면 target은 광선에 부딪힌 위치로 설정합니다.
+                        // 광선 넣어주고  광선이 100미터 까지 발사 된다
+        if(Physics.Raycast(ray, out hit, distance))
+        {
+            // hit = 물체의 위치를 알수 잇음
+            target = hit.point;
+
+        }
+
+        // 공격 사거리 안에 부딪히는 오브젝트가 없으면 targer 포인터는 최대 사거리의 위치로 설정합니다.
+        else // 허공에 쐈을때
+        {
+                    // 기준점 .   방향..           위치저장
+            target = ray.origin + ray.direction * distance;
+        }
+
+        // 확인하기
+        //Debug.Log(target); 확인후 지우기
+
+        // 첫 번째 Raycast 연산으로 얻어진 targer의 정보를 목표지점으로 설정하고,
+        // 총구 입구에서 Raycast를 발사합니다.
+
+        //                           - 총구 위치 빼기 (파티클 위치 가져오기)
+        Vector3 direction = (target - effect.transform.position).normalized;
+
+        //         광선넣기( 광선 위치                 방향                           여기에 추가          
+        if(Physics.Raycast(effect.transform.position, direction, out hit, distance, layer))
+        {
+            if(hit.collider == null) // 아무대나 쏘면 에러 나는 예외 처리
+            {
+                return;
+            }
+
+
+
+            // 충돌한 물체에
+            hit.collider.GetComponentInParent<AIControl>().health -=20;
+
+            hit.collider.GetComponentInParent<AIControl>().Death();
+
+            // 게임신 에서 확인 가능                                         색깔 지정  , 색 10초간 보이게
+            //Debug.DrawLine(effect.transform.position, direction * distance, Color.red, 10); 확인후 지우기
+
+        }
+    }
+
+
+
 }
