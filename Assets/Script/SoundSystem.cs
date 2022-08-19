@@ -16,13 +16,16 @@ public class SoundSystem : MonoBehaviour
         }
 
         audioSource = GetComponent<AudioSource>();
+
+        DontDestroyOnLoad(gameObject); // 자기 자신 넘겨주기 8-19
     }
 
+    //                번호에 참조해서 호출하는것
     public void Sound(int number)
     {
                     // 동시 호출
         audioSource.PlayOneShot(clip[number]);
     }
    
-   
+    
 }

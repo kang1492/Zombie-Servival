@@ -44,6 +44,8 @@ public class Control : MonoBehaviour
             // 총구 방향
         }
 
+        
+
         MoveTo
             (
                  new Vector3
@@ -57,14 +59,34 @@ public class Control : MonoBehaviour
         // 바닥과 출돌하지 않았다면
         if(characterControl.isGrounded == false)
         {
+            // 중력을 받게 만듬
             moveForce.y -= gravity * Time.deltaTime;
         }
-        else
-        {
-            moveForce.y = 0.1f;
-        }
+        //else 점프 하기 , 바닥에 닫지 않았다면 중력을 받게 만듬.
+        //{
+            //moveForce.y = 0.1f;
+        //}
 
         characterControl.Move(moveForce * Time.deltaTime);
+
+        Jump(); //8-19 점프
+    }
+
+    public void Jump() // 8-19
+    {
+        // 스페이스 누르면 점프
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            // 땅바닥에 다였을때 점프하기
+            if (characterControl.isGrounded)
+            {
+                //Debug.Log("점프"); // 확인하기
+                
+                // 점프를 할 수 있도록 설정합니다.
+                moveForce.y = 7.5f;
+                // y 축으로 7.5 이동
+            }
+        }
     }
 
     public void MoveTo(Vector3 direction)
@@ -155,6 +177,9 @@ public class Control : MonoBehaviour
 
             // 게임신 에서 확인 가능                                         색깔 지정  , 색 10초간 보이게
             //Debug.DrawLine(effect.transform.position, direction * distance, Color.red, 10); 확인후 지우기
+
+            Instantiate(effect, hit.transform.position, hit.transform.rotation);// 총구 임펙트 생성
+            // 총 쏜 위치에다 파티클 생성됨.
 
         }
     }

@@ -1,16 +1,35 @@
+using System.Collections; //8-19 몬스터 생성
 using UnityEngine;
+
 
 public class RandomSpawn : MonoBehaviour
 {
-    [SerializeField] GameObject zombie;
+    // [SerializeField] GameObject zombie; 8-19 지워주기
 
     void Start()
     {
         //for(int i = 0; i < 10; i++) // 잘되는지 확인 10마리 리스폰
         // 위치 잡아주기.
-        Instantiate(zombie, RandomPosition(), Quaternion.identity);
+        //Instantiate(zombie, RandomPosition(), Quaternion.identity); // 8-19 좀비 리스폰
+
+        StartCoroutine(nameof(CreateZombie));
+      
     }
     
+    public IEnumerator CreateZombie() // 8-19 몬스터 리스폰
+    {
+        // 업데이트 안하고 몬스터 계속 생성하는 방법
+        while(true)
+        {
+            // 유니티 에게 제어권 계속 넘겨주기
+            //Instantiate(zombie, RandomPosition(), Quaternion.identity); 8-19 더이상 필요 없음
+
+            ObjectPool.instance.GetQueue();
+            yield return new WaitForSeconds(10f); // 10초 마다
+            
+        }
+    }
+
     // 백터3를 반환하는 함수
     public Vector3 RandomPosition() // 새로 만들기
     {
