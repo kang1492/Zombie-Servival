@@ -33,8 +33,8 @@ public class Bullet : MonoBehaviour
                                         // ºÎ¸ð²¬ Ã£±â
             
             //8-12
-            other.transform.GetComponentInParent<AIControl>().health -= 20;
-            other.transform.GetComponentInParent<AIControl>().Death();
+            other.transform.GetComponentInParent<Zombie>().health -= 20;
+            other.transform.GetComponentInParent<Zombie>().Death();
 
 
               //effect.Play();

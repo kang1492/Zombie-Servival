@@ -141,6 +141,8 @@ public class Control : MonoBehaviour
         {
             // hit = 물체의 위치를 알수 잇음
             target = hit.point;
+            Instantiate(effect, hit.point, hit.transform.rotation); // 8-22
+            //          임펙트   명중. 위치 / 장애물에도 총쏘면 임펙트 생김
 
         }
 
@@ -163,22 +165,20 @@ public class Control : MonoBehaviour
         //         광선넣기( 광선 위치                 방향                           여기에 추가          
         if(Physics.Raycast(effect.transform.position, direction, out hit, distance, layer))
         {
-            if(hit.collider == null) // 아무대나 쏘면 에러 나는 예외 처리
-            {
-                return;
-            }
-
-
+            //if(hit.collider == null) // 아무대나 쏘면 에러 나는 예외 처리
+            //{
+            //    return;
+            //}
 
             // 충돌한 물체에
-            hit.collider.GetComponentInParent<AIControl>().health -=20;
+            hit.collider.GetComponentInParent<Zombie>().health -=20;
 
-            hit.collider.GetComponentInParent<AIControl>().Death();
+            hit.collider.GetComponentInParent<Zombie>().Death();
 
             // 게임신 에서 확인 가능                                         색깔 지정  , 색 10초간 보이게
             //Debug.DrawLine(effect.transform.position, direction * distance, Color.red, 10); 확인후 지우기
 
-            Instantiate(effect, hit.transform.position, hit.transform.rotation);// 총구 임펙트 생성
+            //Instantiate(effect, hit.transform.position, hit.transform.rotation);// 총구 임펙트 생성
             // 총 쏜 위치에다 파티클 생성됨.
 
         }
