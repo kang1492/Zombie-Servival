@@ -5,7 +5,7 @@ using UnityEngine.AI;
 
 public class Zombie : MonoBehaviour
 {
-    public int health; // 8-22
+    public int health; // 8-22 
     //private RandomSpawn spawn; //8-22 랜덤스폰;
     private Animator animator; //8-22
     private GameObject Character;
@@ -28,9 +28,17 @@ public class Zombie : MonoBehaviour
     //transform.position = spawn.RandomPosition();
 
     //} // 계속 걸려서 에러
-    
+
     /// ------------ 8-23 수정
-    
+
+
+    // 메모리 풀에서 다시 활성화 시킬때 체력과 속도를 초기화 시켜 줍니다.8-24
+    private void OnEnable()
+    {
+        health = 100; // 새로 생성되었을때 체력 100 으로
+        //agent.speed = 10; // 속도 
+    }
+
 
     void Update()
     {
@@ -85,7 +93,25 @@ public class Zombie : MonoBehaviour
         if (other.CompareTag("Character"))
         {
             agent.speed = 3.5f; // 충돌 벗어 날때 속도 3.5 조정
+
+            transform.LookAt(Character.transform);// 캐릭터 바라보면서
+
             animator.SetBool("Attack", false);
+
+            // 애니메이터 컨트롤러에서 현재 애니메이터의 상태의 이름이“close”일 때 // 8-24 새로 만듬
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+            {
+                // 현재 애니메이션의 진행도가 1보다 크거나 같다면 User Interface를 비활성화합니다.
+                if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+                {
+                    other.GetComponent<Control>().health -= 10;
+                    animator.Rebind();           // 에니메이션 초기화
+                    // 초기화 안하면 프로그매머가 거기 있어서 충동때 마다 데미지 들어감
+                }
+            }
+            // 죽는 모션 , 바로 메모리에 반납안되고. 모션후 반납되게 함
+
+
         }
     }
 }
