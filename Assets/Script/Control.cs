@@ -174,7 +174,7 @@ public class Control : MonoBehaviour
             // 충돌한 물체에
             hit.collider.GetComponentInParent<Zombie>().health -=20;
 
-            hit.collider.GetComponentInParent<Zombie>().Death();
+            //hit.collider.GetComponentInParent<Zombie>().Death(); //8-25 지우기
 
             // 게임신 에서 확인 가능                                         색깔 지정  , 색 10초간 보이게
             //Debug.DrawLine(effect.transform.position, direction * distance, Color.red, 10); 확인후 지우기

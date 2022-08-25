@@ -5,7 +5,8 @@ using UnityEngine.AI;
 
 public class Zombie : MonoBehaviour
 {
-    public int health; // 8-22 
+    [SerializeField] float maxHealth; // 8-25
+    public float health; // 8-22 
     //private RandomSpawn spawn; //8-22 랜덤스폰;
     private Animator animator; //8-22
     private GameObject Character;
@@ -14,6 +15,7 @@ public class Zombie : MonoBehaviour
     void Start()
     {
         // 캐릭터 이름 찾기
+        maxHealth = health; // 체력 100 넣기 이걸 가지고 나누셈할꺼임 // 8-25
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
         Character = GameObject.Find("Character"); //8-22
@@ -42,11 +44,19 @@ public class Zombie : MonoBehaviour
 
     void Update()
     {
-        // 도착 지점 지정
-        agent.SetDestination(Character.transform.position);
+        //총알 맞아서 - 20 되어 체력 80 / 100 = 0.8
+        float tempHealth = 1 - (health / maxHealth); // 8-25
 
+        animator.SetLayerWeight(animator.GetLayerIndex("Other Layer"), health / maxHealth); //8-25
+
+        DistanceSensor(); // 호출하기 8-25
+
+        // 도착 지점 지정
         if (health <= 0)
         {
+            agent.speed = 0; //8-12 //8-25 이동함
+            animator.Play("Death"); //8-12
+
             // 애니메이터 컨트롤러에서 현재 애니메이터의 상태의 이름이“close”일 때 
             if (animator.GetCurrentAnimatorStateInfo(0).IsName("Death"))
             {
@@ -59,16 +69,56 @@ public class Zombie : MonoBehaviour
             }
             // 죽는 모션 , 바로 메모리에 반납안되고. 모션후 반납되게 함
         }
+
+        else // 8-25
+        {
+            //agent.speed = 5; // 시피드 다시 설정
+            DistanceSensor(); //8-25 좀비 속도 0 만들기
+            agent.SetDestination(Character.transform.position);
+        }
     }
 
-    public void Death() // 8-12 이동
-    {
-        if (health <= 0)
-        {
+    //public void Death() // 8-12 이동 //8-25 데스 지우기
+   // {
+      //  if (health <= 0)
+      //  {
             //CancelInvoke(); //8-12
-            agent.speed = 0; //8-12
-            animator.Play("Death"); //8-12
-        }                            //Destroy(gameObject, 3); // 게임오브젝트 파괴 8-12
+        //    agent.speed = 0; //8-12
+      //      animator.Play("Death"); //8-12
+       // }                            //Destroy(gameObject, 3); // 게임오브젝트 파괴 8-12
+   // }
+
+    // 캐릭터 거리에 따라 
+    public void DistanceSensor() //8-25
+    {
+        // 캐릭터의 위치와 자기 자신의 거리가 5보다 작다면 
+        if(Vector3.Distance(Character.transform.position, transform.position) <= 2.5)
+        {
+            agent.speed = 0; 
+            transform.LookAt(Character.transform);
+            animator.SetBool("Attack", true);
+
+            //////////////// 8-25 이동 시킴
+            // 애니메이터 컨트롤러에서 현재 애니메이터의 상태의 이름이“close”일 때 // 8-24 새로 만듬
+            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+            {
+                // 현재 애니메이션의 진행도가 1보다 크거나 같다면 User Interface를 비활성화합니다.
+                if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+                {
+                    // other 였다가 Character 로 바낌 8-25
+                    Character.GetComponent<Control>().health -= 10;
+                    animator.Rebind();           // 에니메이션 초기화
+                    // 초기화 안하면 프로그매머가 거기 있어서 충동때 마다 데미지 들어감
+                }
+            }
+            ////////////////
+        }
+
+        else // 캐릭터의 위치와 자기 자신의거리가 5보다 멀어졌다면      
+        {
+            agent.speed = 3.5f;   
+            animator.SetBool("Attack", false);
+        }
     }
 
     // 게임 오브젝트와 충돌 중 일때 호출되는 함수
@@ -99,16 +149,16 @@ public class Zombie : MonoBehaviour
             animator.SetBool("Attack", false);
 
             // 애니메이터 컨트롤러에서 현재 애니메이터의 상태의 이름이“close”일 때 // 8-24 새로 만듬
-            if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
-            {
+            //if (animator.GetCurrentAnimatorStateInfo(0).IsName("Attack"))
+            //{
                 // 현재 애니메이션의 진행도가 1보다 크거나 같다면 User Interface를 비활성화합니다.
-                if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
-                {
-                    other.GetComponent<Control>().health -= 10;
-                    animator.Rebind();           // 에니메이션 초기화
+            //    if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
+            //    {
+            //        other.GetComponent<Control>().health -= 10;
+            //        animator.Rebind();           // 에니메이션 초기화
                     // 초기화 안하면 프로그매머가 거기 있어서 충동때 마다 데미지 들어감
-                }
-            }
+            //    }
+            //}
             // 죽는 모션 , 바로 메모리에 반납안되고. 모션후 반납되게 함
 
 
