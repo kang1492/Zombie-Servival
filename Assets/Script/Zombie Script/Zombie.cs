@@ -63,6 +63,7 @@ public class Zombie : MonoBehaviour
                 // 현재 애니메이션의 진행도가 1보다 크거나 같다면 User Interface를 비활성화합니다.
                 if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
+                    GameManager.instance.count++; // 8-26
                     ObjectPool.instance.InsertQueue(gameObject); //8-22
                     transform.position = ObjectPool.instance.ActivePostion(); //8-22
                 }
@@ -106,7 +107,10 @@ public class Zombie : MonoBehaviour
                 if (animator.GetCurrentAnimatorStateInfo(0).normalizedTime >= 1)
                 {
                     // other 였다가 Character 로 바낌 8-25
-                    Character.GetComponent<Control>().health -= 10;
+                    Character.GetComponent<Control>().health -= 10;             
+
+                    Character.GetComponent<Control>().ScreenCall(); // 피 튀기기 8-26
+
                     animator.Rebind();           // 에니메이션 초기화
                     // 초기화 안하면 프로그매머가 거기 있어서 충동때 마다 데미지 들어감
                 }

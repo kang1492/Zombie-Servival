@@ -1,12 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI; // 8-26
 
 public class Control : MonoBehaviour
 {
     public int health = 100; //8-23 
     [SerializeField] float axisSpeed = 5.0f; // 카메라 x축과 y축의 회전 속도
     [SerializeField] GameObject eye;
+    [SerializeField] Image bloodScreen; // 피격 이미지
 
 
     private float eulerAngleX;
@@ -34,12 +36,23 @@ public class Control : MonoBehaviour
     
     void Update()
     {
+        if(health <= 0) // 게임 종료
+        {
+            Time.timeScale = 0; // 게임 시간 0 으로 정지
+            Cursor.visible = true; 
+            Cursor.lockState = CursorLockMode.None;
+            GameManager.instance.resultScreen.SetActive(true);
+        }
+
         UpdateRotate(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
 
         if(Input.GetButtonDown("Fire1"))
         {
             effect.Play();
             SoundSystem.instance.Sound(0); // 8-12 총소리
+
+            //StartCoroutine(nameof(Damage)); // 피 튀기기 8-26
+
             TwoStepRay(); //8-18, 호출하기
             //Instantiate(bullet, effect.transform.position, effect.transform.rotation); 8-18 지워도 괜찬음
             // 총구 방향
@@ -183,6 +196,19 @@ public class Control : MonoBehaviour
             // 총 쏜 위치에다 파티클 생성됨.
 
         }
+    }
+
+    public void ScreenCall() // 함수 만들어서 호출하기 8-26
+    {
+        StartCoroutine(nameof(Damage));
+    }
+
+    public IEnumerator Damage()// 코르틴으로 피격 하면 더 좋음 //8-26
+    {
+                                    // 명함비
+        bloodScreen.color = new Color(1, 0, 0,1);
+        yield return new WaitForSeconds(0.1f); // 이미지 0.1초 동안 보이게
+        bloodScreen.color = Color.clear; // 이미지 지우기
     }
 
 
